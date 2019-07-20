@@ -7,109 +7,117 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final titleSection = _TitleSection(
-        'Oeschinen Lake Campground', 'Kandersteg, Switzerland', '41');
-    final buttonSection = Container(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        _buildButtonColumn(context, Icons.call, 'CALL'),
-        _buildButtonColumn(context, Icons.near_me, 'ROUTE'),
-        _buildButtonColumn(context, Icons.share, 'SHARE'),
-      ],
-    ));
-
-    final textSection = Container(
-      padding: EdgeInsets.all(20),
-      child: Text(
-        """
-        nihao jjjjdkdsfdjkdsakdsafksakdf
-        """,
-        softWrap: true,
-      ),
-    );
-
+    final buildings = [
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(
+          BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
+      Building(BuildingType.restaurant, 'La Ciccia', '291 30th St'),
+      Building(BuildingType.restaurant, 'La Ciccia', '291 30th St'),
+      Building(BuildingType.restaurant, 'La Ciccia', '291 30th St'),
+    ];
     return MaterialApp(
-      title: 'Flutter App',
-      home: Scaffold(
-          appBar: AppBar(
-            title: Text('Flutter'),
-          ),
-          body: ListView(
-            children: <Widget>[
-              Image.asset(
-                'images/like.jpg',
-                width: 600,
-                height: 300,
-                fit: BoxFit.cover,
-              ),
-              titleSection,
-              buttonSection,
-              textSection
-            ],
-          )),
-    );
+        title: 'Flutter App',
+        home: Scaffold(
+            appBar: AppBar(
+              title: Text('Flutter'),
+            ),
+            body: BuildingListView(
+                buildings, (index) => print('item $index clicked'))
+        ));
   }
 }
 
-class _TitleSection extends StatelessWidget {
-  final String title;
-  final String subTitle;
-  final String startCount;
+class BuildingListView extends StatelessWidget {
+  final List<Building> buildings;
+  final OnItemClickListener listener;
 
-  _TitleSection(this.title, this.subTitle, this.startCount);
+  BuildingListView(this.buildings, this.listener);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(30.2),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 10),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Text(
-                  subTitle,
-                  style: TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.w400),
-                )
-              ],
-            ),
-          ),
-          Icon(
-            Icons.star,
-            color: Colors.red,
-          ),
-          Text(startCount)
-        ],
-      ),
-    );
+    return ListView.builder(
+        itemCount: buildings.length,
+        itemBuilder: (context, index) {
+          return new ItemView(index, buildings[index], listener);
+        });
   }
 }
 
-Widget _buildButtonColumn(BuildContext context, IconData icon, String label) {
-  final color = Theme.of(context).primaryColor;
-  return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
+typedef OnItemClickListener = void Function(int position);
+
+enum BuildingType { theater, restaurant }
+
+class Building {
+  final BuildingType type;
+  final String title;
+  final String address;
+
+  Building(this.type, this.title, this.address);
+}
+
+class ItemView extends StatelessWidget {
+  final int position;
+  final Building building;
+  final OnItemClickListener listener;
+
+  ItemView(this.position, this.building, this.listener);
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = Icon(
+      building.type == BuildingType.restaurant
+          ? Icons.restaurant
+          : Icons.theaters,
+      color: Colors.blue[900],
+    );
+
+    final widget = Row(
       children: <Widget>[
-        Icon(icon, color: color),
         Container(
-          padding: EdgeInsets.only(top: 8),
-          child: Text(
-            label,
-            style: TextStyle(
-                color: color, fontSize: 15, fontWeight: FontWeight.normal),
+          margin: EdgeInsets.all(10),
+          child: icon,
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                building.title,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              ),
+              Text(building.address)
+            ],
           ),
         )
-      ]);
+      ],
+    );
+
+    return InkWell(
+      onTap: () => listener,
+      child: widget,
+    );
+  }
 }
